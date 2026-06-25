@@ -1,14 +1,16 @@
-# 灵台·观己 功能医学矩阵绘制台
+# 灵台·观己 IFM Matrix Worksheet
 
-试用版静态网页 / PWA：用于把 IFM Matrix 关系显影为可打印矩阵图，辅助营养师内部整理思路。
+圆酱（王润圆，昆明医科大学营养与食品卫生学硕士） × 灵台AI 的功能医学矩阵 worksheet 试用页。
 
-## 使用边界
+Live page: https://9s5bz2jvd2-lang.github.io/lingtai-guanji-ifm-matrix/
 
-- 仅供营养师/专业人员内部参考与试用，不作诊断、治疗或医嘱。
-- 请勿输入真实可识别患者身份资料；如需临床使用，必须先做隐私、伦理与院内流程审查。
-- API key（若填写）只存在浏览器当前页面内存中，刷新即清；请勿在公共电脑输入真实 key。
-- 当前版本不做导入/导出，仅支持浏览器打印/保存为 PDF。
+## 当前版本
 
-## Creator
+- 标准 IFM Matrix worksheet 结构：左侧 ATM，中部 7 个 physiology nodes + 中心 MES，底部 5 个 lifestyle factors。
+- 低饱和 Morandi 医疗软件风格。
+- “Transport” 节点含脂质运输 / 血脂代谢说明，避免将血脂问题误解为普通物流传输。
+- 导出按钮为浏览器打印 / PDF；页面不上传病例资料，不内置 API key。
 
-王润圆 · 昆明医科大学营养与食品卫生学硕士 × 灵台
+## Safety
+
+This is a public trial interface for nutrition-professional workflow support. It is not a medical device, does not diagnose, and does not replace clinician or dietitian judgement. Do not enter identifiable patient information or private API keys on shared/public devices.
