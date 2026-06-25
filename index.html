@@ -113,7 +113,7 @@ body{
 .ring-caption .rc-zh{font-size:12px;font-weight:800;color:var(--sage);letter-spacing:1px}
 .ring-caption .rc-en{font-size:9px;color:var(--ink-light);margin-top:2px;line-height:1.3}
 
-@media(max-width:560px){
+@media(max-width:640px){
   .ring{grid-template-columns:1fr 1fr}
   .ring-caption,.cell-assim,.cell-defense,.cell-structure,.cell-mes,.cell-energy,.cell-comm,.cell-transport,.cell-biotrans{grid-column:auto;grid-row:auto}
   .cell-mes{grid-column:1 / -1}
@@ -149,10 +149,10 @@ body{
    Instead every box gets the SAME min-height — sized to fit the tallest node (energy, 9 items) —
    so all seven render at equal height while their content (incl. .sev-row buttons) always stays
    inside. If a user adds bullets the box grows; it never overflows. */
-@media(min-width:561px){
+@media(min-width:641px){
   .cell-assim>.node-box,.cell-defense>.node-box,.cell-structure>.node-box,.cell-energy>.node-box,.cell-comm>.node-box,.cell-transport>.node-box,.cell-biotrans>.node-box{min-height:470px;width:100%;box-sizing:border-box}
 }
-@media(max-width:560px){
+@media(max-width:640px){
   .cell-assim>.node-box,.cell-defense>.node-box,.cell-structure>.node-box,.cell-energy>.node-box,.cell-comm>.node-box,.cell-transport>.node-box,.cell-biotrans>.node-box{height:auto;min-height:0;width:100%;box-sizing:border-box;text-align:center;align-items:center}
   .node-head{justify-content:center;text-align:center;width:100%}
   .node-sub{text-align:center;width:100%}
@@ -176,7 +176,7 @@ body{
 .mes-arrows{font-size:13px;color:#A294A8;margin-top:4px;letter-spacing:2px}
 .mes-core .mes-edit{margin-top:6px;width:88%}
 .mes-core .node-add-bullet{border-color:#C9BFCB;color:#8E7E96}
-@media(max-width:560px){.mes-core{aspect-ratio:auto;border-radius:18px;max-width:none}}
+@media(max-width:640px){.mes-core{aspect-ratio:auto;border-radius:18px;max-width:none}}
 
 /* LIFESTYLE BAND */
 .lifestyle-band{background:var(--bottom-bg);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:12px}
@@ -234,6 +234,91 @@ body{
   .node-box{break-inside:avoid;box-shadow:none}
   @page{margin:12mm}
 }
+
+/* ===== READABILITY BUMP 2026-06-25 ===== */
+/* 圆酱收到使用者反馈：界面字体偏小。此处只调字级/行距/触控面积，不改 IFM worksheet 结构与内容。 */
+.hdr-left h1{font-size:18px;line-height:1.25}
+.hdr-left p{font-size:12px;line-height:1.35}
+.icon-btn{font-size:13px;min-height:38px;padding:7px 11px}
+.lang-btn{font-size:12px;min-height:34px;padding:6px 10px}
+.settings-field label{font-size:12px}
+.settings-field input{font-size:14px;min-height:38px}
+.preset-btn{font-size:12px;min-height:34px}
+.settings-save,.settings-test{font-size:14px;min-height:42px}
+.settings-note{font-size:11px;line-height:1.55}
+.patient-bar{gap:12px}
+.pf label{font-size:12px}
+.pf input{font-size:14px;min-height:30px}
+.tab-btn{font-size:14px;min-height:44px}
+.sheet-title{font-size:14px;line-height:1.45}
+.col-head{font-size:15px;line-height:1.35}
+.col-head small{font-size:11px;line-height:1.35}
+.atm-label{font-size:14px;line-height:1.35}
+.atm-en,.atm-sub{font-size:11px;line-height:1.4}
+.bullet-input{font-size:13px;line-height:1.45;min-height:24px}
+.bullet-arrow,.bullet-del{font-size:12px}
+.add-bullet{font-size:12px;min-height:30px}
+.ring-caption .rc-zh{font-size:14px;line-height:1.35}
+.ring-caption .rc-en{font-size:11px;line-height:1.4}
+.node-icon{font-size:16px}
+.node-name{font-size:14px;line-height:1.3}
+.node-en{font-size:11px;line-height:1.35}
+.node-sub{font-size:11px;line-height:1.45}
+.node-item-text{font-size:13px;line-height:1.45;margin-bottom:4px}
+.sev-btn{font-size:11px;min-width:30px;height:26px}
+.node-add-bullet{font-size:11px;min-height:28px;padding:4px 6px}
+.mes-core .mes-title{font-size:13px;line-height:1.35}
+.mes-core .mes-en{font-size:10px;line-height:1.3}
+.mes-w{font-size:13px;line-height:1.35}
+.mes-w small{font-size:10px;line-height:1.3}
+.mes-arrows{font-size:15px}
+.lifestyle-title{font-size:15px!important;line-height:1.35}
+.ls-name{font-size:13px!important;line-height:1.35}
+.ls-method-label{font-size:11px;line-height:1.35}
+.ls-method{font-size:13px!important;line-height:1.5;min-height:58px}
+.paste-textarea{font-size:14px;line-height:1.65}
+.analyze-btn,.apply-btn{font-size:14px}
+.bb-btn{font-size:12px}
+@media(max-width:640px){
+  .hdr-left h1{font-size:17px}
+  .sheet{padding:10px}
+  .node-name{font-size:14px}
+  .node-item-text{font-size:13px}
+  .sev-btn{font-size:11px;min-width:34px;height:28px}
+  .bullet-input{font-size:13px}
+}
+/* ===== /READABILITY BUMP 2026-06-25 ===== */
+
+/* ===== FONT-BUMP OVERFLOW FIX 2026-06-25 ===== */
+/* 字体放大后，原先按旧字号调好的固定高度/强制正圆开始装不下内容。
+   原则（按用户要求）：以「内容最多的框安全容纳、绝不溢出」为先，
+   七个生理竖框电脑端同宽即可、高度随内容自适应；空框留白可接受。 */
+
+/* 1) 桌面七个生理节点：保持同宽，去掉为旧字号定的统一 min-height:470px，
+      改为高度随内容自适应。能量（9 条）这类内容最多的框据实撑开，
+      其余框留白，任何框都不再被钉死高度而挤压/溢出。 */
+@media(min-width:641px){
+  .cell-assim>.node-box,.cell-defense>.node-box,.cell-structure>.node-box,
+  .cell-energy>.node-box,.cell-comm>.node-box,.cell-transport>.node-box,
+  .cell-biotrans>.node-box{min-height:0;height:auto;width:100%;box-sizing:border-box}
+}
+
+/* 2) MES 情志核（中心圆）：这是页面唯一的圆形元素，也是字体放大后最易溢出的框。
+      旧规则用 aspect-ratio:1/1 + max-width:230px 强行成圆，放大字体后 6 条目 + 程度按钮
+      远超圆高，圆被撑成竖椭圆且文字/按钮压到圆边外。
+      改法：桌面下取消强制正圆，标题区保持圆润观感（min-height 维持接近圆形的体量），
+      但允许整体随内容向下生长为「圆角胶囊」，所有条目与程度按钮始终安全容纳、不溢出。 */
+@media(min-width:641px){
+  .mes-core{aspect-ratio:auto;max-width:260px;min-height:230px;height:auto;
+    border-radius:130px;padding:18px 16px;justify-content:flex-start;gap:2px;overflow:visible}
+  /* 圆角随高度收敛：内容越多越接近胶囊，避免高瘦椭圆的视觉割裂 */
+  .mes-core .mes-edit{width:94%;margin-top:8px}
+  .mes-core .mes-edit .node-item{margin-bottom:6px}
+  .mes-core .mes-edit .node-item-text{text-align:center}
+  .mes-core .mes-edit .sev-row{justify-content:center}
+}
+/* ===== /FONT-BUMP OVERFLOW FIX 2026-06-25 ===== */
+
 </style>
 </head>
 <body>
