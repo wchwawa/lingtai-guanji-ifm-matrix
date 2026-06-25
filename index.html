@@ -228,7 +228,10 @@ body{
 .footer-watermark{display:inline-block;color:var(--sage);border:1px solid var(--sage-light);border-radius:999px;padding:3px 12px;margin-bottom:5px;font-weight:800;letter-spacing:.08em;background:rgba(110,123,115,.08)}
 .footer{text-align:center;font-size:10px;color:var(--ink-light);padding:14px;max-width:1180px;margin:0 auto}
 
+#print-root{display:none}
 @media print{
+body>*:not(#print-root){display:none!important}
+#print-root{display:block!important;background:white!important;color:#3B3F3B!important}
   .hdr .hdr-right,.tab-bar,.bottom-bar,.add-bullet,.node-add-bullet,.bullet-del,.sev-row,.ls-sev,.ls-note,.paste-wrap,.ai-summary,.settings-drawer,.footer{display:none!important}
   body{background:white;padding-bottom:0}
   .node-box{break-inside:avoid;box-shadow:none}
@@ -848,10 +851,18 @@ function resetAll(){
 
 // ═══════════════ EXPORT (print → PDF; no Blob, no .html download) ═══════════════
 function printReport(){
+  // Print from an in-page hidden report root instead of opening a blank popup.
+  // Some mobile browsers show the transient popup as an empty page or block document.write().
   var html=generateReport();
-  var win=window.open('','_blank');
-  win.document.write(html);win.document.close();
-  setTimeout(function(){win.print()},600)}
+  var doc=new DOMParser().parseFromString(html,'text/html');
+  var root=document.getElementById('print-root');
+  if(!root){root=document.createElement('div');root.id='print-root';document.body.appendChild(root)}
+  var styles=Array.prototype.map.call(doc.querySelectorAll('style'),function(st){return st.outerHTML}).join('');
+  root.innerHTML=styles+doc.body.innerHTML;
+  root.setAttribute('aria-hidden','true');
+  var cleanup=function(){root.innerHTML='';root.setAttribute('aria-hidden','true')};
+  window.addEventListener('afterprint',cleanup,{once:true});
+  setTimeout(function(){window.print()},80)}
 
 function generateReport(){
   var name=document.getElementById('f-name').value||'未填写';
@@ -867,7 +878,7 @@ function generateReport(){
     atmHTML+='</ul></div>'});
   var nodesHTML=ALL_NODES.map(function(n){
     var items=lang==='zh'?n.items_zh:n.items_en;
-    var name2=lang==='zh'?n.zh:n.en;var sub=lang==='zh'?n.sub_zh:n.sub_en;
+    var name2=lang==='zh'?n.zh:n.en;var sub=(lang==='zh'?n.sub_zh:n.sub_en)||'';
     var scores=state.nodeScores[n.id];var extra=state.nodeItems[n.id]||[];
     var total=Object.values(scores).reduce(function(a,b){return a+b},0);
     var pct=total/(items.length*3);
