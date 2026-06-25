@@ -37,7 +37,7 @@ This is a public trial IFM Matrix worksheet co-created by Runyuan Wang and LingT
 2. 在顶部填写姓名、日期、主诉等基本信息；试用时请勿输入可识别真实患者身份的信息。
 3. 在左侧 ATM 区梳理 Antecedents / Triggers / Mediators。
 4. 在中部 7 个功能医学节点中整理同化、防御修复、能量、传递、运输、结构、排泄等线索。
-5. 在底部 Lifestyle 区补充睡眠、运动、压力、营养、水分等生活方式因素。
+5. 在底部 Lifestyle 区为睡眠放松、运动活动、营养水分、压力、人际社交填写可执行的改善方法；这里不是程度评分。
 6. 如需 AI 辅助，可打开「AI 接口设置」，填写自己的 MiMo 或 OpenAI-compatible Base URL、模型名与 API Key；API Key 仅存于页面内存，刷新即清。
 7. 点击「导出PDF」，使用浏览器打印功能保存为 PDF。
 
