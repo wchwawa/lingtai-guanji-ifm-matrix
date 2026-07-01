@@ -1426,66 +1426,97 @@ function generateReport(){
   flash('已生成离线报告');
 }
 function paintReport(rep){
-  var S=rep.sections;
-  function arr(x){return Array.isArray(x)?x.filter(Boolean):[];}
-  function join(items, fallback){items=arr(items); return items.length?items.map(esc).join(' · '):fallback;}
-  function ul(items, fallback){items=arr(items); if(!items.length) return '<p>'+esc(fallback||'待补充。')+'</p>'; return '<ul>'+items.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>';}
-  function cell(id){return (S.matrix.cells||[]).find(function(c){return c.id===id;})||{};}
-  var focus=arr(S.matrix.focus), mild=arr(S.matrix.mild);
-  var red=arr(S.red_flags.hits);
-  var labFlags=arr(S.labs.flags).map(function(f){return f.label+(f.value?'：'+f.value:'');});
-  var gaps=arr(S.gaps.list).map(function(g){return g.node+'：'+(g.missing||[]).join('、');});
-  var qs=arr(S.questions.list).map(function(q){return q.node+'：'+(q.qs||[]).join('；');});
-  var weak=arr(S.lifestyle.weak);
-  var dirs=arr(S.lifestyle.directions);
-  var summaryBits=[];
-  if(S.summary.nick) summaryBits.push('称呼：'+S.summary.nick);
-  if(S.summary.agesex) summaryBits.push(S.summary.agesex);
-  if(S.summary.bmi) summaryBits.push('BMI：'+S.summary.bmi);
-  if(S.summary.draftFields) summaryBits.push('已填字段：'+S.summary.draftFields);
-  if(S.summary.savedRecords) summaryBits.push('历史记录：'+S.summary.savedRecords+' 条');
-  var currentState=[];
-  if(S.summary.mainfeel) currentState.push(S.summary.mainfeel);
-  if(focus.length) currentState.push('重点关注：'+focus.join('、'));
-  if(red.length) currentState.push('安全提醒：'+red.join('、'));
-  var mediators=[];
-  if(focus.length) mediators.push('矩阵重点节点：'+focus.join('、'));
-  if(mild.length) mediators.push('轻度关注节点：'+mild.join('、'));
-  if(weak.length) mediators.push('生活方式薄弱项：'+weak.join('、'));
-  if(labFlags.length) mediators.push('检查资料提示：'+labFlags.join('；'));
-  var html='';
-  html+='<div class="ifm-template-report">';
-  html+='<div class="ifm-page"><h3>功能医学时间轴 <small>Functional Medicine Timeline · 观己记录</small></h3><div class="ifm-blue-rule"></div>';
-  html+='<div class="ifm-story-row">';
-  html+='<div class="ifm-card"><b>前置因素 Antecedents</b>'+ul(summaryBits,'基础信息仍待补充；此处用于放置出生、成长、体质、家族史、长期生活环境等线索。')+'</div>';
-  html+='<div class="ifm-card"><b>介质因素 Mediators</b>'+ul(mediators,'目前主要从问卷、矩阵节点、生活方式与检查资料中继续补线索。')+'</div>';
-  html+='<div class="ifm-card"><b>触发因素 / 事件 Triggers</b>'+ul([S.summary.submitted?('本次提交：'+S.summary.submitted):'', S.summary.mainfeel?('当前主诉/体感：'+S.summary.mainfeel):''].filter(Boolean),'触发事件仍待在时间轴中补充。')+'</div>';
-  html+='</div><div class="ifm-time-rail"><div class="ifm-time-line"></div><div class="ifm-time-points"><div><b>产前</b><br>待补母体孕期/出生前线索</div><div><b>出生</b><br>待补出生、喂养、早期疾病</div><div><b>幼时</b><br>待补过敏、感染、饮食和环境</div><div><b>12岁</b><br>待补青春期、压力、体重和作息变化</div><div><b>当前状态</b><br>'+esc(currentState.join('；')||'从今日资料开始记录')+'</div></div><div class="ifm-symptoms"><b>症状、体征、疾病报告：</b>'+esc(currentState.join('；')||'请继续补充症状、体征、检查报告和时间顺序。')+'</div></div></div>';
-  html+='<div class="ifm-page"><h3>功能医学工具-矩阵 <small>Functional Medicine Matrix · 蓝边框模板</small></h3><div class="ifm-blue-rule"></div><div class="ifm-matrix-wrap">';
-  html+='<div class="ifm-story-panel"><h4>复述您的故事</h4><div class="ifm-card"><b>Antecedents</b><p>'+esc(summaryBits.join('；')||'待补长期背景。')+'</p></div><div class="ifm-card"><b>Triggering Events</b><p>'+esc(S.summary.mainfeel||'待补触发事件。')+'</p></div><div class="ifm-card"><b>Mediators</b><p>'+esc(mediators.join('；')||'待补介质因素。')+'</p></div></div>';
-  html+='<div class="ifm-matrix-board"><div class="ifm-node-grid">';
-  (S.matrix.cells||[]).filter(function(c){return c.id!=='mes';}).forEach(function(c){
-    html+='<div class="ifm-node '+(c.level>0?'hot':'')+'"><h5>'+esc(c.zh)+'</h5><div class="en">'+esc(c.en||'')+'</div><div class="items">'+(c.items&&c.items.length?esc(c.items.join(' · ')):'待观察')+'</div></div>';
-  });
-  var mes=cell('mes');
-  html+='</div><div class="ifm-mes-loop">心理 / 精神 / 情绪：'+(mes.items&&mes.items.length?esc(mes.items.join(' · ')):'请继续记录压力、情绪、睡眠与支持系统')+'</div>';
-  html+='<div class="ifm-life-row">';
-  ['睡眠与放松','运动与活动','营养与饮食','压力与关系','环境与节律'].forEach(function(x){html+='<div><b>'+x+'</b><br>记录、观察，再与专业人员讨论可改善方向。</div>';});
-  html+='</div></div></div></div>';
-  html+='<div class="ifm-human-story"><b>观己故事：</b>这份报告不替你下诊断，而是把身体正在发出的线索排成一张图：哪些是长期背景，哪些像近期触发，哪些在矩阵节点里反复出现。请先关爱自己：把症状、检查、生活方式和情绪压力放回时间轴里看，别急着责备身体。若出现红旗症状或报告异常，请及时找医生、营养师或相关专业人员复核。</div>';
-  if(red.length){html+='<div class="rep-sec rep-redline"><h3><span class="rn">!</span>安全红线提醒<span class="ev">'+S.red_flags.evidence+'</span></h3>'+ul(red,'')+'<p>'+esc(S.red_flags.advice||'')+'</p></div>';}
-  html+='<div class="rep-sec"><h3><span class="rn">1</span>重点关注与补充检查<span class="ev">观己提示</span></h3>';
-  html+='<p><b>可能重点节点：</b>'+esc(focus.join('、')||'暂无明显重点，建议继续完善资料。')+'</p>';
-  html+='<p><b>资料缺口：</b>'+esc(gaps.join('；')||'核心资料暂未显示明显缺口，但仍建议按专业人员意见补充检查。')+'</p>';
-  html+='<p><b>检查提示：</b>'+esc(labFlags.join('；')||'请结合实际情况补充血常规、肝肾功能、甲状腺、维生素/矿物质等资料。')+'</p></div>';
-  html+='<div class="rep-sec"><h3><span class="rn">2</span>可带给专业人员的问题<span class="ev">沟通辅助</span></h3>'+ul(qs,'请带着时间轴、检查报告和具体症状变化，与医生、营养师或相关专业人员讨论。')+'</div>';
-  html+='<div class="rep-sec"><h3><span class="rn">3</span>生活方式观察方向<span class="ev">'+S.lifestyle.evidence+'</span></h3>';
-  html+='<p><b>较需观察：</b>'+esc(weak.join('、')||'饮食、睡眠、活动、压力和环境节律均可继续记录。')+'</p>'+ul(dirs,'先从规律记录、睡眠、饮食结构、活动量和压力觉察开始，不自行开处方。')+'<p>'+esc(S.lifestyle.boundary||'')+'</p></div>';
-  html+='<div class="rep-sec rep-disclaimer"><h3><span class="rn">✓</span>边界说明</h3><p>'+esc(S.disclaimer.text)+'</p><p>'+esc(S.disclaimer.scope)+'</p></div>';
-  html+='</div>';
-  document.getElementById('reportBody').innerHTML=html;
+  // 师父 2026-07-01 纠偏：报告必须按原 IFM 模板“固定图式”生成。
+  // PC 与手机只做整图等比缩放，不把模板拆成卡片式重排。
+  var S=(rep&&rep.sections)||{};
+  var sum=S.summary||{};
+  var matrix=S.matrix||{};
+  var cells=Array.isArray(matrix.cells)?matrix.cells:[];
+  var red=S.red_flags||{};
+  var labs=S.labs||{};
+  var gaps=S.gaps||{};
+  var qs=S.questions||{};
+  var life=S.lifestyle||{};
+  function escH(v){return String(v==null?'':v).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function arr(v){return Array.isArray(v)?v:(v?[v]:[])}
+  function take(a,n){return arr(a).filter(Boolean).slice(0,n)}
+  function li(items,empty){var a=take(items,4); if(!a.length)a=[empty||'待补充资料']; return '<ul>'+a.map(function(x){return '<li>'+escH(x)+'</li>'}).join('')+'</ul>'}
+  function textList(items,empty){var a=take(items,3); return a.length?a.map(escH).join('；'):escH(empty||'待补充资料')}
+  var byId={}; cells.forEach(function(c){if(c&&c.id)byId[c.id]=c});
+  function cell(id,zh,en){var c=byId[id]||{}; return {zh:c.zh||zh,en:c.en||en,items:take(c.items,2),level:c.level||'observe'}}
+  function noteFor(id,empty){var c=cell(id,'',''); return textList(c.items, empty||'待结合问卷、检查与专业复核补充。')}
+  var nick=sum.nick||'观己者';
+  var ageSex=sum.agesex||'年龄/性别待补';
+  var bmi=sum.bmi?('BMI '+sum.bmi):'BMI 待补';
+  var mainfeel=sum.mainfeel||matrix.focus||'当前症状、体征与检查线索待补充';
+  var antecedents=[nick+'｜'+ageSex+'｜'+bmi];
+  if(sum.draftFields) antecedents.push('已填写问卷字段 '+sum.draftFields+' 项');
+  if(sum.savedRecords) antecedents.push('已保存健康/饮食/检查资料 '+sum.savedRecords+' 条');
+  if(!antecedents.length) antecedents.push('家族史、成长史、长期生活方式与既往资料待补充');
+  var labFlags=take((labs.flags||[]).map(function(f){return (f.label||'指标')+(f.value?('：'+f.value):'')}),4);
+  var redHits=take(red.hits||[],3);
+  var triggers=labFlags.concat(redHits);
+  if(!triggers.length) triggers=['近期体检、症状变化或生活事件待补充'];
+  var gapList=take((gaps.list||[]).map(function(g){return (g.node||'资料缺口')+'：'+(g.missing||'待补充')}),4);
+  var mediators=gapList.length?gapList:['睡眠、运动、饮食、压力、血脂/血压/肝肾功能等介质线索待补充'];
+  var symptomLine=mainfeel+'；'+(matrix.mild||'本报告仅作线索整理，需由医生、营养师或相关专业人员复核。');
+  var qList=take((qs.list||[]).map(function(q){return (q.node||'复核问题')+'：'+textList(q.qs,'待追问')}),3);
+  var lifeDirs=take(life.directions||life.weak||[],5);
+  var story='这份「观己」报告把已经填写的问卷、检查和生活资料放回功能医学时间轴与矩阵中，帮助你看见：哪些因素可能在更早处埋下伏笔，哪些事件让身体发出提醒，哪些生活方式和检查资料仍需补齐。它不是判决书，也不是诊断或处方；它是一张带去与医生、营养师或相关专业人员讨论的身体故事图。';
+  var nodeOrder=[
+    ['assimilation','同化代谢 Assimilation','胃肠道消化 / 吸收 / 微生物','需补三日饮食、饮料、夜宵与胃肠反应记录。','left:555px;top:125px;width:250px','left:500px;top:178px;width:250px'],
+    ['biotransformation','代谢转换&消除 Biotransformation','毒素暴露、肝肾代谢与排除','需看肝肾功能、尿酸、用药/饮酒/暴露史。','left:910px;top:132px;width:250px','left:895px;top:196px;width:245px'],
+    ['structural','结构完整性 Structural Integrity','细胞膜、肌肉骨骼与体成分','腰围、体成分、肌肉量和姿势/疼痛线索待跟踪。','left:405px;top:272px;width:250px','left:388px;top:330px;width:225px'],
+    ['defense','防御&修护 Defence&Repair','免疫调节与炎症反应','炎症、感染、过敏和修复资料需专业复核。','left:875px;top:273px;width:250px','left:895px;top:330px;width:230px'],
+    ['communication','传递系统 Communication','内分泌、神经传递与信号','血糖、胰岛素、甲状腺、激素节律等需综合看。','left:430px;top:415px;width:240px','left:405px;top:456px;width:235px'],
+    ['transport','传输系统 Transport','心血管、脂质代谢、淋巴系统','血脂、血压、循环和水肿线索待补充。','left:655px;top:478px;width:270px','left:650px;top:530px;width:250px'],
+    ['energy','能量生成 Energy Production','氧化压力、线粒体功能','疲劳、餐后困倦、运动耐受与血糖波动需观察。','left:930px;top:420px;width:220px','left:920px;top:470px;width:230px']
+  ];
+  var css='<style>'+
+'.ifm-template-report{font-family:STLiti,LiSu,"隶书","FZLiShu-S01",KaiTi,STKaiti,"Microsoft YaHei",Arial,sans-serif;color:#111}'+
+'.ifm-fit-frame{position:relative;width:100%;overflow:hidden;margin:16px auto 22px;background:#f5f5f5;border-radius:14px}'+
+'.ifm-slide{position:absolute;left:0;top:0;width:1280px;height:720px;margin:0;overflow:hidden;transform-origin:left top;box-sizing:border-box;background:#fff}'+
+'.ifm-slide .topbar{position:absolute;top:0;left:0;width:1130px;height:13px;background:#3f6fc5}.ifm-slide .toporange{position:absolute;top:0;right:0;width:190px;height:13px;background:#3f6fc5;clip-path:polygon(18% 0,100% 0,100% 100%,0 100%)}.ifm-slide .botorange{position:absolute;bottom:0;left:0;width:190px;height:13px;background:#3f6fc5}.ifm-slide .botbar{position:absolute;bottom:0;left:160px;width:1120px;height:13px;background:#3f6fc5}'+
+'.ifm-slide .title{position:absolute;left:54px;top:40px;font-size:43px;font-weight:900;color:#111}.ifm-slide .fill{font-size:16px;line-height:1.34}.ifm-slide .fill ul{margin:.25em 0 0 1.05em;padding:0}.ifm-slide .fill li{margin:.13em 0}.ifm-slide .boxh{font-size:28px;font-weight:900;margin-bottom:8px}.ifm-slide .tagline{position:absolute;left:60px;bottom:22px;font-size:16px;color:#555}'+
+'.timeline-slide .tpanelL{position:absolute;left:70px;top:130px;width:330px;height:290px;background:#eee;padding:20px}.timeline-slide .tpanelR{position:absolute;left:405px;top:130px;width:770px;height:205px;background:#eee;padding:20px}.timeline-slide .trigger{position:absolute;left:405px;top:335px;width:770px;height:92px;background:#dcdcdc;padding:15px 20px}.timeline-slide .vline{position:absolute;left:400px;top:130px;width:2px;height:430px;background:#aaa}.timeline-slide .prenatal{position:absolute;left:380px;top:430px;width:42px;height:90px;background:white;border:2px solid #aaa;text-align:center;font-weight:900;font-size:24px;padding-top:17px;z-index:3}.timeline-slide .predict{position:absolute;left:150px;top:455px;font-size:34px;font-weight:900;writing-mode:vertical-rl}.timeline-slide .arrow{position:absolute;left:400px;top:445px;width:780px;height:70px;background:#3f6fc5;border:4px solid #3f6fc5;clip-path:polygon(0 0,89% 0,100% 50%,89% 100%,0 100%);z-index:2}.timeline-slide .arrow span{position:absolute;font-size:26px;font-weight:900;top:17px;color:#111}.timeline-slide .symbox{position:absolute;left:405px;top:510px;width:770px;height:135px;background:white;border:4px solid #3f6fc5;padding:35px 20px 15px}.timeline-slide .symbox b{font-size:23px}'+
+'.matrix-slide{background:linear-gradient(160deg,#fffafc 0%,#fff5f8 52%,#fff0f4 100%);box-shadow:inset 0 0 0 7px #3f6fc5}.matrix-slide .topbar,.matrix-slide .botbar{background:#3f6fc5}.matrix-slide .toporange,.matrix-slide .botorange{background:#3f6fc5}.matrix-slide .story{position:absolute;left:52px;top:120px;width:312px;height:525px;background:#eee;padding:18px 18px 12px}.matrix-slide .story h2{margin:0 0 8px;font-size:25px}.matrix-slide .story .sec{border-top:3px solid #3f6fc5;padding-top:8px;margin-top:8px}.matrix-slide .story .label{font-weight:900;font-size:19px;margin-bottom:2px}.matrix-slide .system{position:absolute;text-align:center;font-weight:800;font-size:18px;line-height:1.14}.matrix-slide .system .sub{display:block;font-weight:500;font-size:15px}.matrix-slide .note{position:absolute;font-size:13px;line-height:1.2;background:rgba(255,255,255,.88);border:1px solid rgba(63,111,197,.35);border-radius:10px;padding:6px 8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}.matrix-slide .loop{position:absolute;left:620px;top:290px;width:160px;height:110px}.matrix-slide .loop svg{position:absolute;inset:0}.matrix-slide .loop span{position:absolute;font-size:23px;font-weight:900}.matrix-slide .psy{left:5px;top:9px}.matrix-slide .spirit{right:0;top:9px}.matrix-slide .emotion{left:60px;bottom:0}.matrix-slide .life{position:absolute;left:365px;bottom:34px;width:865px;height:116px;background:#eee;border-top:4px solid #3f6fc5}.matrix-slide .life h3{margin:6px 0 3px;text-align:center;font-size:21px}.matrix-slide .lifegrid{display:grid;grid-template-columns:repeat(5,1fr);height:78px;border-top:3px solid #3f6fc5}.matrix-slide .lifegrid>div{border-left:2px solid #3f6fc5;padding:6px 8px;font-size:12.5px;line-height:1.18}.matrix-slide .lifegrid>div:first-child{border-left:0}.matrix-slide .lifegrid b{display:block;font-size:16px;margin-bottom:3px}.matrix-slide .story-report{position:absolute;left:392px;top:592px;width:815px;font-size:15px;line-height:1.26;background:rgba(255,255,255,.72);padding:7px 10px;border-radius:10px;color:#333}'+
+'.story-page{background:linear-gradient(160deg,#fffafc,#fff5f8 55%,#fff0f4);box-shadow:inset 0 0 0 7px #3f6fc5}.story-page .storybox{position:absolute;left:78px;top:125px;width:1124px;height:465px;background:rgba(255,255,255,.82);border:4px solid #3f6fc5;border-radius:24px;padding:30px 36px;font-size:25px;line-height:1.8;color:#26344e}.story-page .cols{position:absolute;left:78px;top:604px;width:1124px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.story-page .cols div{background:#eee;border-top:4px solid #3f6fc5;padding:10px 12px;font-size:16px;line-height:1.35}'+
+'</style>';
+  var timeline=''+
+'<div class="ifm-fit-frame"><div class="ifm-slide timeline-slide">'+
+'<div class="topbar"></div><div class="toporange"></div><div class="botorange"></div><div class="botbar"></div><div class="title">功能医学时间轴</div>'+
+'<div class="tpanelL"><div class="boxh">前置因素</div><div class="fill">'+li(antecedents,'长期背景资料待补充')+'</div></div>'+
+'<div class="tpanelR"><div class="boxh">介质因素</div><div class="fill">'+li(mediators,'睡眠、运动、饮食、压力与检查资料待补充')+'</div></div>'+
+'<div class="trigger"><div class="boxh" style="font-size:25px;margin-bottom:4px">触发因素或触发事件</div><div class="fill">'+li(triggers,'近期触发事件待补充')+'</div></div>'+
+'<div class="vline"></div><div class="predict">预测</div><div class="prenatal">产<br>前</div><div class="arrow"><span style="left:80px">出生</span><span style="left:250px">幼时</span><span style="left:440px">12岁</span><span style="left:600px">当前状态</span></div>'+
+'<div class="symbox"><b>症状、体征、疾病报告</b><div class="fill" style="margin-top:8px">'+escH(symptomLine)+'</div></div><div class="tagline">灵台·观己｜身体故事不是判决书，是提醒你回到自己身边。</div>'+
+'</div></div>';
+  var matrixHtml=''+
+'<div class="ifm-fit-frame"><div class="ifm-slide matrix-slide">'+
+'<div class="topbar"></div><div class="toporange"></div><div class="botorange"></div><div class="botbar"></div><div class="title">功能医学工具-矩阵</div>'+
+'<div class="story"><h2>复述您的故事</h2><div class="sec"><div class="label">前置因素（Antecedents）：</div><div class="fill">'+li(antecedents,'长期背景资料待补充')+'</div></div><div class="sec"><div class="label">触发因素（Triggering Events）：</div><div class="fill">'+li(triggers,'近期触发事件待补充')+'</div></div><div class="sec"><div class="label">媒介因素（Mediators）</div><div class="fill">'+li(mediators,'介质因素待补充')+'</div></div></div>'+
+nodeOrder.map(function(n){return '<div class="system" style="'+n[4]+'">'+escH(n[1])+'<span class="sub">'+escH(n[2])+'</span></div><div class="note" style="'+n[5]+'">'+escH(noteFor(n[0],n[3]))+'</div>'}).join('')+
+'<div class="loop"><svg viewBox="0 0 160 110"><defs><marker id="a" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3f6fc5"/></marker></defs><path d="M35,20 C78,-8 121,10 129,44" fill="none" stroke="#3f6fc5" stroke-width="5" marker-end="url(#a)"/><path d="M124,55 C114,96 63,104 42,78" fill="none" stroke="#3f6fc5" stroke-width="5" marker-end="url(#a)"/><path d="M36,70 C12,45 13,24 30,20" fill="none" stroke="#3f6fc5" stroke-width="5" marker-end="url(#a)"/></svg><span class="psy">心理</span><span class="spirit">精神</span><span class="emotion">情绪</span></div><div class="note" style="left:600px;top:395px;width:245px">担忧、压力、情绪与睡眠会影响身体调节；先从可记录、可改变处开始。</div>'+
+'<div class="life"><h3>可改善的生活方式</h3><div class="lifegrid"><div><b>睡眠&放松</b>'+escH(lifeDirs[0]||'固定睡眠窗口，记录休息质量。')+'</div><div><b>运动&活动</b>'+escH(lifeDirs[1]||'从餐后轻活动与可持续运动开始。')+'</div><div><b>营养和水分</b>'+escH(lifeDirs[2]||'记录三日饮食、水分与饮料。')+'</div><div><b>压力</b>'+escH(lifeDirs[3]||'识别压力源，建立可执行放松。')+'</div><div><b>人际社交关系</b>'+escH(lifeDirs[4]||'寻找支持系统，避免独自承压。')+'</div></div></div>'+
+'<div class="story-report">灵台·观己｜关注本心·共同成长</div></div></div>';
+  var storyHtml=''+
+'<div class="ifm-fit-frame"><div class="ifm-slide story-page">'+
+'<div class="topbar"></div><div class="toporange"></div><div class="botorange"></div><div class="botbar"></div><div class="title">观己故事</div><div class="storybox">'+escH(story)+'</div><div class="cols"><div><b>重点关注</b><br>'+escH(textList(labFlags.concat(redHits), '暂无明确红旗，继续补充资料。'))+'</div><div><b>补充检查/资料</b><br>'+escH(textList(gapList, '补充三日饮食、血脂、血压、肝肾功能等。'))+'</div><div><b>带去问专业人员的问题</b><br>'+escH(textList(qList, '哪些指标最值得复核？生活方式先从哪一步做？'))+'</div></div><div class="tagline">本报告仅作自我观察、资料整理与专业沟通辅助；不作诊断、治疗、用药或补剂处方。</div></div></div>';
+  document.getElementById('reportBody').innerHTML=css+'<div class="ifm-template-report">'+timeline+matrixHtml+storyHtml+'</div>';
+  setTimeout(fitIfmTemplateSlides,30);
+  if(!window.__ifmTemplateFitBound){window.__ifmTemplateFitBound=true;window.addEventListener('resize',fitIfmTemplateSlides)}
 }
-
+function fitIfmTemplateSlides(){
+  var frames=document.querySelectorAll('#reportBody .ifm-fit-frame');
+  frames.forEach(function(frame){
+    var slide=frame.querySelector('.ifm-slide');
+    if(!slide)return;
+    var scale=Math.min(1, frame.clientWidth/1280);
+    if(!isFinite(scale)||scale<=0)scale=1;
+    slide.style.transform='scale('+scale+')';
+    frame.style.height=(720*scale)+'px';
+  });
+}
 function exportReport(){
   if(!state.lastReport){ flash('请先生成报告'); return; }
   var payload={
