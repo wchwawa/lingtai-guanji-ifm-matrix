@@ -428,6 +428,36 @@ header .grow{flex:1}
   .app-credits .credit-mark{letter-spacing:.12em;}
   .app-credits .credit-line{font-size:13px;}
 }
+
+/* IFM template report v20260701: blue frame + pale dawn-pink matrix, no model-facing wording */
+#reportBody .ifm-template-report{font-family:STLiti,LiSu,"隶书","FZLiShu-S01",KaiTi,STKaiti,"Microsoft YaHei",Arial,sans-serif;color:#24304a}
+#reportBody .ifm-page{background:linear-gradient(160deg,#fffafc 0%,#fff5f8 52%,#fff0f4 100%);border:4px solid #3f6fc5;border-radius:22px;padding:18px;margin:16px 0;box-shadow:0 10px 28px rgba(63,111,197,.10)}
+#reportBody .ifm-page h3{margin:0 0 12px;font-size:20px;color:#1d3f83;display:flex;justify-content:space-between;gap:10px;align-items:center}
+#reportBody .ifm-page h3 small{font-size:11px;color:#6078b5;font-weight:600}
+#reportBody .ifm-blue-rule{height:6px;background:#3f6fc5;border-radius:999px;margin:8px 0 14px}
+#reportBody .ifm-story-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+#reportBody .ifm-card{background:rgba(255,255,255,.76);border:1.5px solid rgba(63,111,197,.42);border-radius:16px;padding:12px;min-height:88px}
+#reportBody .ifm-card b{display:block;color:#1d3f83;margin-bottom:6px;font-size:14px}
+#reportBody .ifm-card p,#reportBody .ifm-card li{font-size:12.5px;line-height:1.65;color:#3f4d68;margin:0}
+#reportBody .ifm-time-rail{margin:14px 0;padding:14px;background:rgba(255,255,255,.58);border:2px solid #3f6fc5;border-radius:18px}
+#reportBody .ifm-time-line{height:18px;background:#3f6fc5;border-radius:999px;position:relative;margin:18px 6px 10px}
+#reportBody .ifm-time-line:after{content:"";position:absolute;right:-10px;top:-7px;border-left:22px solid #3f6fc5;border-top:16px solid transparent;border-bottom:16px solid transparent}
+#reportBody .ifm-time-points{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center;font-size:12px;color:#34445f}
+#reportBody .ifm-symptoms{border:2px solid #3f6fc5;border-radius:16px;background:rgba(255,255,255,.78);padding:12px;margin-top:12px;font-size:12.8px;line-height:1.7;color:#3f4d68}
+#reportBody .ifm-matrix-wrap{display:grid;grid-template-columns:260px 1fr;gap:14px;align-items:stretch}
+#reportBody .ifm-story-panel{background:rgba(255,255,255,.70);border-right:5px solid #3f6fc5;border-radius:18px;padding:12px}
+#reportBody .ifm-story-panel h4{margin:0 0 8px;color:#1d3f83;font-size:16px}
+#reportBody .ifm-matrix-board{border:4px solid #3f6fc5;border-radius:20px;background:rgba(255,255,255,.50);padding:12px}
+#reportBody .ifm-node-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+#reportBody .ifm-node{border:1.5px solid rgba(63,111,197,.55);border-radius:15px;background:rgba(255,255,255,.82);padding:10px;min-height:92px}
+#reportBody .ifm-node.hot{box-shadow:0 0 0 2px rgba(63,111,197,.18);background:rgba(255,255,255,.92)}
+#reportBody .ifm-node h5{margin:0 0 4px;font-size:13.5px;color:#1d3f83}.ifm-node .en{font-size:10.5px;color:#667792}.ifm-node .items{font-size:11.5px;line-height:1.5;color:#4a5870;margin-top:5px}
+#reportBody .ifm-mes-loop{margin:10px auto 0;max-width:420px;text-align:center;border:2.5px solid #3f6fc5;border-radius:999px;background:rgba(255,255,255,.78);padding:10px 12px;color:#1d3f83;font-weight:800}
+#reportBody .ifm-life-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}.ifm-life-row div{border-top:4px solid #3f6fc5;background:rgba(255,255,255,.72);border-radius:12px;padding:9px;font-size:12px;color:#3f4d68}
+#reportBody .ifm-human-story{background:rgba(255,255,255,.82);border-left:5px solid #3f6fc5;border-radius:18px;padding:14px;margin:16px 0;font-size:13px;line-height:1.75;color:#3f4d68}
+#reportBody .ifm-human-story b{color:#1d3f83}
+@media(max-width:760px){#reportBody .ifm-story-row,#reportBody .ifm-matrix-wrap,#reportBody .ifm-node-grid,#reportBody .ifm-life-row{grid-template-columns:1fr}#reportBody .ifm-time-points{grid-template-columns:1fr;text-align:left}#reportBody .ifm-story-panel{border-right:0;border-bottom:5px solid #3f6fc5}}
+
 </style>
 </head>
 <body>
@@ -1396,100 +1426,66 @@ function generateReport(){
   flash('已生成离线报告');
 }
 function paintReport(rep){
-  var S=rep.sections, html='';
-
-  /* 红线置顶 */
-  if(S.red_flags.hits.length){
-    html+='<div class="rep-sec rep-redline"><h3><span class="rn">!</span>安全红线提醒（最优先）<span class="ev">'+S.red_flags.evidence+'</span></h3>';
-    S.red_flags.hits.forEach(function(t){ html+='<div class="rl-item">⚠ '+esc(t)+'</div>'; });
-    html+='<p style="color:var(--danger);font-weight:600;margin-top:8px">'+esc(S.red_flags.advice)+'</p></div>';
-  }
-
-  /* 1 数据摘要 */
-  html+='<div class="rep-sec"><h3><span class="rn">1</span>数据摘要<span class="ev">'+S.summary.evidence+'</span></h3>';
-  html+='<div class="kv">称呼：<b>'+esc(S.summary.nick)+'</b>　年龄性别：'+esc(S.summary.agesex)+'</div>';
-  html+='<div class="kv">最想改善：'+esc(S.summary.mainfeel)+'</div>';
-  html+='<div class="kv">问卷状态：'+(S.summary.submitted?'已提交':'未提交')+'　BMI：<b>'+esc(S.summary.bmi)+'</b></div>';
-  html+='<div class="kv">数据草稿字段 <b>'+S.summary.draftFields+'</b> 项；已保存档案 <b>'+S.summary.savedRecords+'</b> 条。</div>';
-  html+='<div class="kv">关键实验室资料完整度：<b>'+S.summary.completeness+'%</b>（'+S.summary.labFilled+' / '+S.summary.labTotal+' 项核心指标已填）</div>';
-  html+='<div class="completeness-bar"><i style="width:'+S.summary.completeness+'%"></i></div></div>';
-
-  /* 2 IFM 矩阵映射 */
-  html+='<div class="rep-sec"><h3><span class="rn">2</span>IFM 矩阵映射<span class="ev">观察性</span></h3>';
-  html+='<div class="mx-grid">';
-  S.matrix.cells.forEach(function(c){
-    var lvName=['未见勾选','少量关注','较多关注'];
-    html+='<div class="mx-cell'+(c.level>0?' hot':'')+(c.id==='mes'?' mx-mes':'')+'"><div class="mc-h"><span>'+esc(c.zh)+
-      '<br><span class="mc-en">'+esc(c.en)+'</span></span><span class="mc-lv lv'+c.level+'">'+lvName[c.level]+'</span></div>'+
-      '<div class="mc-items">'+(c.items.length?esc(c.items.join(' · ')):'<span style="color:var(--ink-soft)">未勾选</span>')+'</div></div>';
+  var S=rep.sections;
+  function arr(x){return Array.isArray(x)?x.filter(Boolean):[];}
+  function join(items, fallback){items=arr(items); return items.length?items.map(esc).join(' · '):fallback;}
+  function ul(items, fallback){items=arr(items); if(!items.length) return '<p>'+esc(fallback||'待补充。')+'</p>'; return '<ul>'+items.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>';}
+  function cell(id){return (S.matrix.cells||[]).find(function(c){return c.id===id;})||{};}
+  var focus=arr(S.matrix.focus), mild=arr(S.matrix.mild);
+  var red=arr(S.red_flags.hits);
+  var labFlags=arr(S.labs.flags).map(function(f){return f.label+(f.value?'：'+f.value:'');});
+  var gaps=arr(S.gaps.list).map(function(g){return g.node+'：'+(g.missing||[]).join('、');});
+  var qs=arr(S.questions.list).map(function(q){return q.node+'：'+(q.qs||[]).join('；');});
+  var weak=arr(S.lifestyle.weak);
+  var dirs=arr(S.lifestyle.directions);
+  var summaryBits=[];
+  if(S.summary.nick) summaryBits.push('称呼：'+S.summary.nick);
+  if(S.summary.agesex) summaryBits.push(S.summary.agesex);
+  if(S.summary.bmi) summaryBits.push('BMI：'+S.summary.bmi);
+  if(S.summary.draftFields) summaryBits.push('已填字段：'+S.summary.draftFields);
+  if(S.summary.savedRecords) summaryBits.push('历史记录：'+S.summary.savedRecords+' 条');
+  var currentState=[];
+  if(S.summary.mainfeel) currentState.push(S.summary.mainfeel);
+  if(focus.length) currentState.push('重点关注：'+focus.join('、'));
+  if(red.length) currentState.push('安全提醒：'+red.join('、'));
+  var mediators=[];
+  if(focus.length) mediators.push('矩阵重点节点：'+focus.join('、'));
+  if(mild.length) mediators.push('轻度关注节点：'+mild.join('、'));
+  if(weak.length) mediators.push('生活方式薄弱项：'+weak.join('、'));
+  if(labFlags.length) mediators.push('检查资料提示：'+labFlags.join('；'));
+  var html='';
+  html+='<div class="ifm-template-report">';
+  html+='<div class="ifm-page"><h3>功能医学时间轴 <small>Functional Medicine Timeline · 观己记录</small></h3><div class="ifm-blue-rule"></div>';
+  html+='<div class="ifm-story-row">';
+  html+='<div class="ifm-card"><b>前置因素 Antecedents</b>'+ul(summaryBits,'基础信息仍待补充；此处用于放置出生、成长、体质、家族史、长期生活环境等线索。')+'</div>';
+  html+='<div class="ifm-card"><b>介质因素 Mediators</b>'+ul(mediators,'目前主要从问卷、矩阵节点、生活方式与检查资料中继续补线索。')+'</div>';
+  html+='<div class="ifm-card"><b>触发因素 / 事件 Triggers</b>'+ul([S.summary.submitted?('本次提交：'+S.summary.submitted):'', S.summary.mainfeel?('当前主诉/体感：'+S.summary.mainfeel):''].filter(Boolean),'触发事件仍待在时间轴中补充。')+'</div>';
+  html+='</div><div class="ifm-time-rail"><div class="ifm-time-line"></div><div class="ifm-time-points"><div><b>产前</b><br>待补母体孕期/出生前线索</div><div><b>出生</b><br>待补出生、喂养、早期疾病</div><div><b>幼时</b><br>待补过敏、感染、饮食和环境</div><div><b>12岁</b><br>待补青春期、压力、体重和作息变化</div><div><b>当前状态</b><br>'+esc(currentState.join('；')||'从今日资料开始记录')+'</div></div><div class="ifm-symptoms"><b>症状、体征、疾病报告：</b>'+esc(currentState.join('；')||'请继续补充症状、体征、检查报告和时间顺序。')+'</div></div></div>';
+  html+='<div class="ifm-page"><h3>功能医学工具-矩阵 <small>Functional Medicine Matrix · 蓝边框模板</small></h3><div class="ifm-blue-rule"></div><div class="ifm-matrix-wrap">';
+  html+='<div class="ifm-story-panel"><h4>复述您的故事</h4><div class="ifm-card"><b>Antecedents</b><p>'+esc(summaryBits.join('；')||'待补长期背景。')+'</p></div><div class="ifm-card"><b>Triggering Events</b><p>'+esc(S.summary.mainfeel||'待补触发事件。')+'</p></div><div class="ifm-card"><b>Mediators</b><p>'+esc(mediators.join('；')||'待补介质因素。')+'</p></div></div>';
+  html+='<div class="ifm-matrix-board"><div class="ifm-node-grid">';
+  (S.matrix.cells||[]).filter(function(c){return c.id!=='mes';}).forEach(function(c){
+    html+='<div class="ifm-node '+(c.level>0?'hot':'')+'"><h5>'+esc(c.zh)+'</h5><div class="en">'+esc(c.en||'')+'</div><div class="items">'+(c.items&&c.items.length?esc(c.items.join(' · ')):'待观察')+'</div></div>';
   });
-  html+='</div></div>';
-
-  /* 3 可能重点节点 */
-  html+='<div class="rep-sec"><h3><span class="rn">3</span>可能重点节点（观察性，非诊断）<span class="ev">C / B</span></h3>';
-  if(S.matrix.focus.length){
-    html+='<p>勾选较多、建议优先与专业人员沟通梳理：</p><p>';
-    S.matrix.focus.forEach(function(z){ html+='<span class="focus-pill">'+esc(z)+'</span>'; });
-    html+='</p>';
-    S.matrix.cells.forEach(function(c){ if(c.level>=2&&c.report_text){ html+='<p style="margin-top:6px"><b style="color:var(--plum-deep)">'+esc(c.zh)+'：</b>'+esc(c.report_text)+'</p>'; } });
-  }
-  if(S.matrix.mild.length){
-    html+='<p style="margin-top:6px">数量较少、可一并留意：</p><p>';
-    S.matrix.mild.forEach(function(z){ html+='<span class="mild-pill">'+esc(z)+'</span>'; });
-    html+='</p>';
-  }
-  if(!S.matrix.focus.length&&!S.matrix.mild.length){ html+='<p>本次勾选较少。保持规律作息、均衡饮食与适度活动通常有帮助；如有持续不适，建议与专业人员沟通。</p>'; }
+  var mes=cell('mes');
+  html+='</div><div class="ifm-mes-loop">心理 / 精神 / 情绪：'+(mes.items&&mes.items.length?esc(mes.items.join(' · ')):'请继续记录压力、情绪、睡眠与支持系统')+'</div>';
+  html+='<div class="ifm-life-row">';
+  ['睡眠与放松','运动与活动','营养与饮食','压力与关系','环境与节律'].forEach(function(x){html+='<div><b>'+x+'</b><br>记录、观察，再与专业人员讨论可改善方向。</div>';});
+  html+='</div></div></div></div>';
+  html+='<div class="ifm-human-story"><b>观己故事：</b>这份报告不替你下诊断，而是把身体正在发出的线索排成一张图：哪些是长期背景，哪些像近期触发，哪些在矩阵节点里反复出现。请先关爱自己：把症状、检查、生活方式和情绪压力放回时间轴里看，别急着责备身体。若出现红旗症状或报告异常，请及时找医生、营养师或相关专业人员复核。</div>';
+  if(red.length){html+='<div class="rep-sec rep-redline"><h3><span class="rn">!</span>安全红线提醒<span class="ev">'+S.red_flags.evidence+'</span></h3>'+ul(red,'')+'<p>'+esc(S.red_flags.advice||'')+'</p></div>';}
+  html+='<div class="rep-sec"><h3><span class="rn">1</span>重点关注与补充检查<span class="ev">观己提示</span></h3>';
+  html+='<p><b>可能重点节点：</b>'+esc(focus.join('、')||'暂无明显重点，建议继续完善资料。')+'</p>';
+  html+='<p><b>资料缺口：</b>'+esc(gaps.join('；')||'核心资料暂未显示明显缺口，但仍建议按专业人员意见补充检查。')+'</p>';
+  html+='<p><b>检查提示：</b>'+esc(labFlags.join('；')||'请结合实际情况补充血常规、肝肾功能、甲状腺、维生素/矿物质等资料。')+'</p></div>';
+  html+='<div class="rep-sec"><h3><span class="rn">2</span>可带给专业人员的问题<span class="ev">沟通辅助</span></h3>'+ul(qs,'请带着时间轴、检查报告和具体症状变化，与医生、营养师或相关专业人员讨论。')+'</div>';
+  html+='<div class="rep-sec"><h3><span class="rn">3</span>生活方式观察方向<span class="ev">'+S.lifestyle.evidence+'</span></h3>';
+  html+='<p><b>较需观察：</b>'+esc(weak.join('、')||'饮食、睡眠、活动、压力和环境节律均可继续记录。')+'</p>'+ul(dirs,'先从规律记录、睡眠、饮食结构、活动量和压力觉察开始，不自行开处方。')+'<p>'+esc(S.lifestyle.boundary||'')+'</p></div>';
+  html+='<div class="rep-sec rep-disclaimer"><h3><span class="rn">✓</span>边界说明</h3><p>'+esc(S.disclaimer.text)+'</p><p>'+esc(S.disclaimer.scope)+'</p></div>';
   html+='</div>';
-
-  /* 3.5 实验室提示 */
-  if(S.labs.flags.length){
-    html+='<div class="rep-sec"><h3><span class="rn">L</span>实验室资料提示（仅提示，不诊断）<span class="ev">'+S.labs.evidence+'</span></h3>';
-    html+='<p>'+esc(S.labs.note)+'</p><ul>';
-    S.labs.flags.forEach(function(f){ html+='<li><b>'+esc(f.label)+'</b>：当前值 '+esc(String(f.value))+'，<b style="color:var(--plum-deep)">'+esc(f.dir)+'</b>，建议带检测报告与专业人员复核。</li>'; });
-    html+='</ul></div>';
-  }
-
-  /* 4 资料缺口 / 待补充 */
-  html+='<div class="rep-sec"><h3><span class="rn">4</span>资料缺口 / 待补充<span class="ev">'+S.gaps.evidence+'</span></h3>';
-  if(S.gaps.list.length){
-    html+='<ul>';
-    S.gaps.list.forEach(function(g){ html+='<li><b>'+esc(g.node)+'</b>：建议补充 '+esc(g.missing.join('、'))+'</li>'; });
-    html+='</ul>';
-  } else { html+='<p>重点节点的核心检测资料较完整；如有新检测结果可继续录入。</p>'; }
-  html+='</div>';
-
-  /* 5 给营养师 / 专业人员的追问清单 */
-  html+='<div class="rep-sec"><h3><span class="rn">5</span>给营养师 / 专业人员的追问清单<span class="ev">'+S.questions.evidence+'</span></h3>';
-  if(S.questions.list.length){
-    S.questions.list.forEach(function(q){ html+='<p style="margin-top:6px"><b style="color:var(--plum-deep)">'+esc(q.node)+'</b></p><ul>'; q.qs.forEach(function(x){ html+='<li>'+esc(x)+'</li>'; }); html+='</ul>'; });
-  } else { html+='<p>完成问卷后这里会按重点节点生成追问清单。</p>'; }
-  html+='</div>';
-
-  /* 6 保守生活方式方向 */
-  html+='<div class="rep-sec"><h3><span class="rn">6</span>保守生活方式方向<span class="ev">'+S.lifestyle.evidence+'</span></h3>';
-  if(S.lifestyle.weak.length){ html+='<p>您自评较弱的方面：<b style="color:var(--plum-deep)">'+esc(S.lifestyle.weak.join('、'))+'</b></p>'; }
-  html+='<ul>'; S.lifestyle.directions.forEach(function(d){ html+='<li>'+esc(d)+'</li>'; }); html+='</ul>';
-  html+='<p style="margin-top:6px;color:var(--ink-soft)">'+esc(S.lifestyle.boundary)+'</p></div>';
-
-  /* 7 证据 / 边界 + 免责 */
-  html+='<div class="rep-sec rep-disclaimer"><h3><span class="rn">✓</span>证据 / 边界说明</h3>';
-  html+='<p>'+esc(S.disclaimer.text)+'</p>';
-  html+='<p style="margin-top:8px;color:var(--ink-soft)">定位：'+esc(S.disclaimer.scope)+'。证据分层：'+
-    esc(S.disclaimer.evidence_levels.A)+'；'+esc(S.disclaimer.evidence_levels.B)+'；'+esc(S.disclaimer.evidence_levels.C)+'；'+esc(S.disclaimer.evidence_levels.D)+'。</p></div>';
-
-  /* 规则追溯 trace */
-  html+='<div class="rep-sec"><h3><span class="rn">T</span>规则追溯 trace</h3>';
-  html+='<p style="color:var(--ink-soft)">每段结论可追溯到规则 ID、输入字段与证据等级（共 '+rep.trace.length+' 条）：</p>';
-  rep.trace.forEach(function(t){ html+='<div class="trace-line">'+esc(t)+'</div>'; });
-  html+='<div class="trace-line" style="margin-top:6px">engine = '+esc(rep.engine)+' · 生成方式 = '+esc(rep.generated)+'</div></div>';
-
-  /* AI 增强状态行（默认离线规则引擎） */
-  html+='<div class="safety">⚕ 以上报告由<b style="color:var(--plum-deep)">默认离线规则引擎</b>本地生成，未调用任何 API。AI 增强'+
-    (state.ai.enabled?('当前为<b>开启</b>（'+esc(state.ai.provider||'未选择 provider')+'），仅可用于润色 / 摘要 / 追问，需脱敏并自备 Key'):'当前<b>关闭</b>')+'。'+
-    '本报告供营养师 / 专业人员参考，不诊断、不治疗、不处方。</div>';
-
   document.getElementById('reportBody').innerHTML=html;
 }
+
 function exportReport(){
   if(!state.lastReport){ flash('请先生成报告'); return; }
   var payload={
