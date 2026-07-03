@@ -257,5 +257,6 @@ out.push(`<rect width="${W}" height="220" fill="url(#sky)" opacity="0"/>`);
 
 out.push('</svg>');
 
-writeFileSync('/Users/wangchanghao/lingtai-guanji-ifm-matrix/assets/hero-dawn.svg', out.join('\n'));
-console.log('written', (out.join('\n').length / 1024).toFixed(1) + 'KB');
+const outputUrl = new URL('../assets/hero-dawn.svg', import.meta.url);
+writeFileSync(outputUrl, out.join('\n'));
+console.log('written assets/hero-dawn.svg', (out.join('\n').length / 1024).toFixed(1) + 'KB');
