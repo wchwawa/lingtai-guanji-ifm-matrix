@@ -969,7 +969,7 @@ body.report-focus .tabbar,body.report-focus .saved-flash{display:none}
     <div class="page-head">
       <div class="ph-k">AI 增强 · 可选 OPTIONAL</div>
       <h2>AI 增强（可选）</h2>
-      <div class="ph-d"><b style="color:var(--plum-deep)">默认本地整理，AI 增强关闭。</b>报告只做自我观察、资料整理与专业沟通辅助，不作诊断、治疗、用药或补剂处方。</div>
+      <div class="ph-d"><b style="color:var(--plum-deep)">默认离线规则引擎；AI 仅作可选润色 / 摘要 / 追问生成</b>，不参与红线判定、实验室异常判断、诊断或处方。开启需自备 Key、脱敏后发送，且任何免费额度都不稳定。</div>
     </div>
     <div id="aiBody"></div>
     <div class="btn-row" style="margin:16px 0 8px">
@@ -1352,23 +1352,31 @@ var FUNCTIONAL_MEDICINE_SKILL = {
 
 /* ════════ 可选 AI 增强配置（em-5 §6 落地；默认关闭，不写死 Key） ════════ */
 var AI_ENHANCEMENT = {
-  enabled_by_default:false,
-  role:'本预览默认使用本地整理与人工复核口径；健康报告页面只呈现给人看的健康叙事。',
-  default_engine:'本地整理',
-  redaction:'健康数据属敏感信息；本预览只在本地整理问卷、矩阵与报告，不把资料自动发送到外部服务。',
-  key_policy:'本预览不收集、不保存、不展示任何 Key 或外部接入候选。'
-};
-
-/* Guided ATM options: do not force users to invent antecedents/triggers/mediators from a blank box. */
-var ATM_OPTIONS={
-  ant:[
-    '家族慢病/代谢病史','早期喂养或成长经历','长期高糖/高油/外食饮食','长期压力或照护负担','长期睡眠作息不规律','既往疾病或手术史','长期用药/补剂史','体重长期变化','运动不足或久坐','环境/职业暴露'
-  ],
-  tri:[
-    '近期感染/发热','手术/创伤/住院','连续熬夜或过劳','明显情绪事件','饮食模式突然改变','饮酒或聚餐后不适','药物/补剂变化','近期体检异常','体重快速变化','旅行/搬家/环境变化'
-  ],
-  med:[
-    '睡眠不足或节律紊乱','压力持续偏高','饮食不规律或摄入失衡','运动不足或久坐','消化吸收不适','炎症/过敏线索','血糖/能量代谢压力','内分泌/激素节律线索','疼痛/肌骨结构问题','情绪/心理支持不足'
+  enabled_by_default:false,           /* 默认关闭 */
+  role:'仅作可选润色 / 摘要 / 追问生成；不参与红线判定、实验室异常判断、诊断或处方。',
+  default_engine:'离线规则引擎（FUNCTIONAL_MEDICINE_SKILL）',
+  redaction:'发送前必须脱敏：删除姓名、电话、身份证、精确地址、检测机构、原始报告图片 / PDF；只发送结构化摘要。',
+  key_policy:'任何 provider key 只从用户本地配置读取，不写入仓库、不放默认值、不打印日志。',
+  /* Provider 候选（来源 em-5 §6.1；不含任何 key / token） */
+  providers:[
+    {id:'gemini', name:'Google Gemini Developer API', tier:'rec',
+     note:'免费层适合脱敏测试 / 用户自带 Key；免费层内容可能用于产品改进，生产健康数据建议付费并核合规条款。'},
+    {id:'groq', name:'Groq', tier:'rec',
+     note:'有开发 / 免费层、推理快；脱敏后可作可选摘要，免费额度会波动，需用户知情。'},
+    {id:'openrouter', name:'OpenRouter Free Models', tier:'dev',
+     note:'仅开发期多模型测试；隐私取决于下游 provider，不默认发送健康敏感数据。'},
+    {id:'cloudflare', name:'Cloudflare Workers AI', tier:'dev',
+     note:'服务端低成本备选；模型能力中等，隐私 / DPA 条款须上线前复核。'},
+    {id:'github', name:'GitHub Models', tier:'dev',
+     note:'原型用 no-cost 限速访问；不建议默认处理健康敏感数据。'},
+    {id:'hf', name:'Hugging Face Inference Providers', tier:'dev',
+     note:'原型 / 开源模型测试；数据流向具体 provider，需逐一核查。'},
+    {id:'kimi', name:'Moonshot / Kimi', tier:'care',
+     note:'需自备 Key，按 token 计费；上线前复核隐私与计费，健康数据需脱敏。'},
+    {id:'deepseek', name:'DeepSeek', tier:'care',
+     note:'需自备 Key，成本低；上线前复核隐私、数据存储与境内外传输。'},
+    {id:'zhipu', name:'Zhipu / GLM', tier:'care',
+     note:'需自备 Key；官方免费不确定，上线前复核 BigModel / 智谱隐私条款。'}
   ]
 };
 
@@ -2187,24 +2195,51 @@ function exportReport(){
 /* ════════ AI 增强设置（可选，默认关闭） ════════ */
 function renderAi(){
   var A=AI_ENHANCEMENT, html='';
-  html+='<div class="card"><div class="row-between"><h3 style="margin:0">AI 增强说明 '+
-    '<span class="ai-status off">默认关闭</span></h3>'+
-    '<label class="switch"><input type="checkbox" id="aiToggle" disabled><span class="sl-track"></span></label></div>'+
-    '<p class="grp-desc" style="margin-top:10px"><b style="color:var(--plum-deep)">本预览保持报告干净、给人看的健康叙事为主。</b>'+esc(A.role)+'</p>'+
-    '<div class="safety">⚕ 默认方式：'+esc(A.default_engine)+'。报告只做自我观察、资料整理与专业沟通辅助，不写技术来源，不作诊断、治疗、用药或补剂处方。</div></div>';
-  html+='<div class="card"><h3>隐私与边界</h3>'+
+  html+='<div class="card"><div class="row-between"><h3 style="margin:0">AI 增强开关 '+
+    '<span class="ai-status '+(state.ai.enabled?'on':'off')+'">'+(state.ai.enabled?'已开启':'默认关闭')+'</span></h3>'+
+    '<label class="switch"><input type="checkbox" id="aiToggle" '+(state.ai.enabled?'checked':'')+' onchange="toggleAi(this.checked)"><span class="sl-track"></span></label></div>'+
+    '<p class="grp-desc" style="margin-top:10px"><b style="color:var(--plum-deep)">默认离线规则引擎；AI 仅作可选润色 / 摘要 / 追问生成。</b>'+esc(A.role)+'</p>'+
+    '<div class="safety">⚕ 默认引擎：'+esc(A.default_engine)+'。开启 AI 不改变红线判定与实验室异常判断，这些始终由本地规则引擎决定。</div></div>';
+
+  html+='<div class="card"><h3>隐私与脱敏</h3>'+
     '<ul style="margin:4px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-mid);line-height:1.7">'+
     '<li>'+esc(A.redaction)+'</li>'+
     '<li>'+esc(A.key_policy)+'</li>'+
-    '<li>若未来需要真实接入，应另做专业设置页与隐私说明；本健康报告页不展示这些内部调研内容。</li>'+
+    '<li>健康数据属敏感信息：任何免费额度都不稳定，上线前须复核各 provider 的隐私 / 计费 / 数据是否用于训练。</li>'+
     '</ul></div>';
+
+  /* Key 输入：占位，无默认值，仅本地内存，不落仓库 */
+  html+='<div class="card"><h3>Provider 与 Key（本地，可选）</h3>'+
+    '<p class="grp-desc">仅当开启 AI 时使用。Key 只保存在当前页面内存，<b>不写入文件、不打印日志、无默认值</b>。本原型不实际发送请求。</p>'+
+    '<div class="fields one">'+
+    '<div class="field"><label>选择 Provider</label><select id="aiProvider" onchange="state.ai.provider=this.value">'+
+    '<option value="">（未选择）</option>';
+  A.providers.forEach(function(p){ html+='<option value="'+p.id+'"'+(state.ai.provider===p.id?' selected':'')+'>'+esc(p.name)+'</option>'; });
+  html+='</select></div>'+
+    '<div class="field"><label>API Key（可选，仅本地内存）</label>'+
+    '<input type="password" autocomplete="off" placeholder="自备 Key 后粘贴；不会被保存到文件" oninput="/* 仅内存，不持久化 */"></div>'+
+    '</div></div>';
+
+  /* Provider 候选表（来源 em-5 §6） */
+  html+='<div class="card"><h3>Provider 候选（调研结论）</h3>'+
+    '<p class="grp-desc">来源：em-5 调研报告 §6。<span class="badge-rec">脱敏测试优先</span> Gemini / Groq；'+
+    '<span class="badge-dev">仅开发多模型</span> OpenRouter / Cloudflare / GitHub / HF；'+
+    '<span class="badge-care">需自备 Key·上线前复核</span> Kimi / DeepSeek / Zhipu。</p>'+
+    '<table class="provider-tbl"><thead><tr><th>Provider</th><th>定位</th><th>说明</th></tr></thead><tbody>';
+  A.providers.forEach(function(p){
+    var tier = p.tier==='rec'?'<span class="badge-rec">脱敏测试优先</span>':(p.tier==='dev'?'<span class="badge-dev">仅开发多模型</span>':'<span class="badge-care">需自备 Key</span>');
+    html+='<tr><td class="pri">'+esc(p.name)+'</td><td>'+tier+'</td><td>'+esc(p.note)+'</td></tr>';
+  });
+  html+='</tbody></table>'+
+    '<div class="safety" style="margin-top:12px">⚕ OpenRouter 仅用于开发期多模型测试，不默认发送健康数据；Cloudflare Workers AI 可作服务端低成本备选，隐私 / DPA 须上线前复核；Kimi / DeepSeek / Zhipu 需自备 Key 并在上线前复核隐私与计费。免费额度均不稳定。</div></div>';
+
   document.getElementById('aiBody').innerHTML=html;
 }
 function toggleAi(on){
   state.ai.enabled=!!on;
   state.ai.acknowledged=!!on;
   renderAi();
-  flash(on?'AI 增强已开启（仅润色 / 摘要 / 追问）':'AI 增强已关闭（本地整理）');
+  flash(on?'AI 增强已开启（仅润色 / 摘要 / 追问）':'AI 增强已关闭（离线规则引擎）');
 }
 
 /* ════════ 营养师查看 ════════ */
