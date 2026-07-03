@@ -8,7 +8,8 @@
     "test": "vitest run tests/unit",
     "test:e2e": "vitest run tests/e2e",
     "test:all": "vitest run",
-    "test:watch": "vitest tests/unit"
+    "test:watch": "vitest tests/unit",
+    "gen:hero": "node scripts/gen-hero.mjs"
   },
   "devDependencies": {
     "vitest": "^4.1.9"
