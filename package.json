@@ -1,0 +1,23 @@
+{
+  "name": "lingtai-guanji",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Lingtai Guanji - local-first functional medicine matrix web app with Supabase auth & persistence",
+  "scripts": {
+    "test": "vitest run tests/unit",
+    "test:e2e": "vitest run tests/e2e",
+    "test:all": "vitest run",
+    "test:watch": "vitest tests/unit"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.9"
+  },
+  "dependencies": {
+    "standardwebhooks": "^1.0.0",
+    "@supabase/supabase-js": "^2.110.0"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

@@ -2,9 +2,10 @@
 
 圆酱（王润圆，昆明医科大学营养与食品卫生学硕士）× 灵台AI 共创的健康档案整理与矩阵报告 Web App。
 
-- 在线预览 / Live page: https://9s5bz2jvd2-lang.github.io/lingtai-guanji-ifm-matrix/
+- 在线预览 / Live page: https://lingtai-guanji.vercel.app/
 - GitHub Pages 源码: https://github.com/9s5bz2jvd2-lang/lingtai-guanji-ifm-matrix
 - 创建者: 王润圆 昆明医科大学营养与食品卫生学硕士 × 灵台AI
+- Server 技术栈: Vercel（静态站点 + Serverless API）+ Supabase（Auth、RLS 与数据持久化）
 
 > 一句话：**灵台·观己用长期健康档案与矩阵报告，帮助人温柔地看见自己的身体变化。**
 
