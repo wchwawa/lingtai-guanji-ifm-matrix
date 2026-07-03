@@ -121,36 +121,19 @@ header .grow{flex:1}
   .view.active{animation:none}
 }
 
-/* ═════════ Hero：拂晓 · 新月抱旧月 · 樱花树 ═════════ */
+/* ═════════ Hero：画境级拂晓樱花场景（2026-07-03 重制，资产 assets/hero-dawn.svg） ═════════ */
 .hero{
   position:relative;overflow:hidden;
   min-height:calc(100dvh - 64px);
   display:flex;flex-direction:column;justify-content:center;
-  padding:48px 0 64px;
+  padding:56px 0 72px;
 }
-.hero-sky{position:absolute;inset:0;pointer-events:none}
-.hero-sky::before{
-  content:"";position:absolute;inset:0;
-  background:
-    radial-gradient(120% 90% at 78% 108%, rgba(232,183,199,.50) 0%, rgba(233,184,176,.34) 26%, transparent 56%),
-    radial-gradient(90% 70% at 50% 112%, rgba(197,154,91,.30) 0%, transparent 52%),
-    linear-gradient(178deg, #EEF0F6 0%, #E9E7F1 30%, #F3E7E6 58%, #F9EFE3 82%, var(--bg) 100%);
+.hero-scene{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:60% 76%;
+  pointer-events:none;-webkit-user-select:none;user-select:none;
 }
-.hero-sky::after{ /* 远山黛影 */
-  content:"";position:absolute;left:0;right:0;bottom:0;height:22%;
-  background:
-    radial-gradient(60% 120% at 24% 100%, rgba(143,150,176,.16) 0%, transparent 62%),
-    radial-gradient(52% 110% at 74% 102%, rgba(166,161,200,.13) 0%, transparent 60%);
-}
-.hero-moon{
-  position:absolute;top:11%;left:46%;width:64px;height:64px;border-radius:50%;
-  background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.16), rgba(255,255,255,.05) 70%, transparent 72%);
-}
-.hero-moon i{ /* 新月抱旧月：细弯月 + 微光旧月盘 */
-  position:absolute;inset:6px;border-radius:50%;display:block;
-  box-shadow:inset 10px -7px 0 0 rgba(255,255,255,.85), inset 0 0 0 40px rgba(255,255,255,.07);
-  filter:drop-shadow(0 0 14px rgba(255,255,255,.45));
-}
+.hero-sky{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .petal{
   position:absolute;top:-4%;width:10px;height:8px;border-radius:80% 20% 70% 30%;
   background:linear-gradient(135deg, rgba(232,183,199,.9), rgba(233,184,176,.7));
@@ -169,40 +152,53 @@ header .grow{flex:1}
   92%{opacity:.5}
   100%{transform:translateY(108vh) translateX(3vw) rotate(420deg);opacity:0}
 }
-.hero-grid{
-  position:relative;display:grid;grid-template-columns:1fr;gap:30px;align-items:center;width:100%;
+.hero-grid{position:relative;display:grid;grid-template-columns:1fr;align-items:center;width:100%}
+.hero-copy{position:relative;max-width:620px;animation:heroRise 1s var(--ease-out) both}
+.hero-copy::before{ /* 柔光衬底，保证文字在云层上的可读性 */
+  content:"";position:absolute;inset:-70px -90px -60px -70px;z-index:-1;
+  background:radial-gradient(58% 62% at 42% 42%, rgba(250,247,241,.5), rgba(250,247,241,0) 72%);
 }
-@media(min-width:960px){.hero-grid{grid-template-columns:1.02fr .98fr;gap:24px}}
-.hero-copy{animation:heroRise 1s var(--ease-out) both}
 .hero-title{
   font-family:var(--serif);font-weight:700;
-  font-size:clamp(29px,6.2vw,64px);line-height:1.32;letter-spacing:.05em;
-  margin:0 0 22px;text-wrap:balance;
+  font-size:clamp(30px,5.6vw,60px);line-height:1.34;letter-spacing:.06em;
+  margin:0 0 22px;text-wrap:balance;color:#2C3457;
+  text-shadow:0 2px 26px rgba(255,255,255,.45);
+}
+.hero-seal{
+  display:inline-block;writing-mode:vertical-rl;
+  font-size:.3em;font-weight:700;letter-spacing:.16em;
+  color:#FDF4EC;background:#B4453E;border-radius:.24em;
+  padding:.5em .36em;margin-left:.46em;vertical-align:.7em;
+  transform:rotate(3deg);box-shadow:0 .18em .5em rgba(148,52,44,.35);
+  text-shadow:none;
 }
 .hero-sub{
-  font-size:clamp(15px,1.6vw,17.5px);color:var(--ink-mid);line-height:2.0;
-  margin:0 0 34px;max-width:30em;letter-spacing:.02em;
+  font-size:clamp(15px,1.6vw,17.5px);color:#454E6B;line-height:2.05;
+  margin:0 0 36px;max-width:27em;letter-spacing:.02em;
+  text-shadow:0 1px 16px rgba(255,255,255,.5);
 }
 .hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-.hero-art{position:relative;animation:heroRise 1.2s .15s var(--ease-out) both}
-.hero-art svg{width:min(520px,100%);display:block;margin:0 auto}
 .hero-poem{
-  position:absolute;top:50%;right:26px;transform:translateY(-50%);
-  writing-mode:vertical-rl;font-family:var(--serif);font-size:15px;letter-spacing:.42em;
-  color:var(--ink-mid);opacity:.65;display:none;
+  position:absolute;top:45%;right:30px;transform:translateY(-50%);
+  writing-mode:vertical-rl;font-family:var(--serif);font-size:15px;letter-spacing:.4em;
+  color:#39415F;opacity:.82;display:none;text-shadow:0 1px 12px rgba(255,255,255,.4);
 }
 @media(min-width:1180px){.hero-poem{display:block}}
 @keyframes heroRise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){
-  .hero-copy,.hero-art{animation:none}
+  .hero-copy{animation:none}
   .petal{display:none}
 }
 @media(max-width:959px){
-  .hero{min-height:auto;padding:34px 0 56px}
-  .hero-art{order:-1}
-  .hero-art svg{width:min(320px,74vw)}
-  .hero-title{text-align:center}
-  .hero-sub{text-align:center;margin-left:auto;margin-right:auto}
+  .hero{min-height:92dvh;padding:56px 0 40vh;justify-content:flex-start}
+  .hero-scene{object-position:64% 100%}
+  .hero-sky::before{ /* 晨雾纱：保证文字压在花冠上时依旧可读 */
+    content:"";position:absolute;left:0;right:0;top:0;height:58%;
+    background:linear-gradient(180deg, rgba(250,247,241,.6), rgba(250,247,241,.26) 52%, rgba(250,247,241,0));
+  }
+  .hero-copy{max-width:none;margin:0 auto;text-align:center}
+  .hero-copy::before{inset:-40px -30px}
+  .hero-sub{margin-left:auto;margin-right:auto}
   .hero-cta{justify-content:center}
 }
 
@@ -728,63 +724,21 @@ body.report-focus .tabbar,body.report-focus .saved-flash{display:none}
 <!-- ═════════ 首页 · 落地页（2026-07-03 视觉重构：樱花拂晓 / 大留白 / 一区一内容） ═════════ -->
 <section class="view active" id="view-home">
 
-  <!-- Hero：拂晓天空 · 新月抱旧月 · 樱花树 -->
+  <!-- Hero：画境级拂晓樱花场景（assets/hero-dawn.svg，脚本生成的独立资产） -->
   <div class="hero">
+    <img class="hero-scene" src="./assets/hero-dawn.svg" alt="" aria-hidden="true">
     <div class="hero-sky" aria-hidden="true">
-      <div class="hero-moon"><i></i></div>
       <span class="petal p1"></span><span class="petal p2"></span><span class="petal p3"></span>
       <span class="petal p4"></span><span class="petal p5"></span><span class="petal p6"></span>
     </div>
     <div class="wrap wide hero-grid">
       <div class="hero-copy">
-        <h1 class="hero-title">一次理解身体，<br>观见本我之旅</h1>
+        <h1 class="hero-title">一次理解身体，<br>观见本我之旅<span class="hero-seal" aria-hidden="true">灵台</span></h1>
         <p class="hero-sub">借灵台为镜，以功能医学为基础，结合东方整体智慧，帮助你梳理身体的线索，理解健康背后的故事。</p>
         <div class="hero-cta">
           <button class="btn btn-primary btn-lg" onclick="go('wizard')">开始观己之旅 →</button>
           <button class="btn btn-ghost btn-lg" onclick="scrollToId('journey')">了解观己之旅</button>
         </div>
-      </div>
-      <div class="hero-art" aria-hidden="true">
-        <svg viewBox="0 0 520 540" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="hCrownA" cx="42%" cy="32%" r="70%">
-              <stop offset="0%" stop-color="#F6D7E0"/><stop offset="55%" stop-color="#E8B7C7"/><stop offset="100%" stop-color="#DBA3B4" stop-opacity=".85"/>
-            </radialGradient>
-            <radialGradient id="hCrownB" cx="45%" cy="30%" r="70%">
-              <stop offset="0%" stop-color="#F8E0E2"/><stop offset="60%" stop-color="#EBC0BC"/><stop offset="100%" stop-color="#DEA9AB" stop-opacity=".85"/>
-            </radialGradient>
-            <linearGradient id="hTrunk" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stop-color="#3A3F58"/><stop offset="100%" stop-color="#55506E"/>
-            </linearGradient>
-            <radialGradient id="hGlow" cx="50%" cy="88%" r="55%">
-              <stop offset="0%" stop-color="#E9C98F" stop-opacity=".55"/><stop offset="100%" stop-color="#E9C98F" stop-opacity="0"/>
-            </radialGradient>
-          </defs>
-          <ellipse cx="250" cy="470" rx="240" ry="70" fill="url(#hGlow)"/>
-          <path d="M258 486 C252 420 240 370 236 316 C233 276 244 246 268 218" fill="none" stroke="url(#hTrunk)" stroke-width="17" stroke-linecap="round"/>
-          <path d="M247 350 C216 320 196 300 176 268" fill="none" stroke="url(#hTrunk)" stroke-width="10" stroke-linecap="round"/>
-          <path d="M240 300 C270 274 300 254 338 236" fill="none" stroke="url(#hTrunk)" stroke-width="9" stroke-linecap="round"/>
-          <path d="M268 218 C288 196 316 182 348 174" fill="none" stroke="url(#hTrunk)" stroke-width="8" stroke-linecap="round"/>
-          <path d="M268 218 C258 192 252 170 254 142" fill="none" stroke="url(#hTrunk)" stroke-width="7" stroke-linecap="round"/>
-          <g>
-            <ellipse cx="176" cy="238" rx="74" ry="52" fill="url(#hCrownB)" opacity=".92"/>
-            <ellipse cx="258" cy="128" rx="88" ry="58" fill="url(#hCrownA)" opacity=".95"/>
-            <ellipse cx="356" cy="170" rx="92" ry="60" fill="url(#hCrownA)" opacity=".92"/>
-            <ellipse cx="300" cy="212" rx="70" ry="46" fill="url(#hCrownB)" opacity=".9"/>
-            <ellipse cx="414" cy="232" rx="58" ry="38" fill="url(#hCrownB)" opacity=".85"/>
-            <ellipse cx="204" cy="160" rx="52" ry="36" fill="url(#hCrownA)" opacity=".88"/>
-            <ellipse cx="122" cy="196" rx="40" ry="27" fill="url(#hCrownA)" opacity=".78"/>
-          </g>
-          <g fill="#F3D7DE">
-            <circle cx="150" cy="300" r="4" opacity=".8"/>
-            <circle cx="420" cy="292" r="3.4" opacity=".7"/>
-            <circle cx="368" cy="118" r="3" opacity=".8"/>
-            <circle cx="228" cy="82" r="3.2" opacity=".7"/>
-            <circle cx="470" cy="196" r="3" opacity=".65"/>
-            <circle cx="106" cy="252" r="3" opacity=".6"/>
-          </g>
-          <path d="M150 486 C210 478 320 478 386 486" fill="none" stroke="rgba(111,141,118,.45)" stroke-width="3" stroke-linecap="round"/>
-        </svg>
       </div>
     </div>
     <div class="hero-poem" aria-hidden="true">观己，借灵台为镜，照见本心。</div>
